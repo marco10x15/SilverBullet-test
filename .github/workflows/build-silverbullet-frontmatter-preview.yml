@@ -30,7 +30,9 @@ jobs:
           fetch-depth: 1
 
       - name: Apply frontmatter preview prototype
-        run: python3 tools/apply_frontmatter_preview.py silverbullet
+        run: |
+          python3 tools/apply_frontmatter_preview.py silverbullet
+          python3 tools/patch_frontmatter_tests.py silverbullet
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -59,9 +61,17 @@ jobs:
         working-directory: silverbullet
         run: npm ci
 
+      - name: Generate SilverBullet version metadata
+        working-directory: silverbullet
+        run: npm run build:plugs
+
       - name: TypeScript check
         working-directory: silverbullet
         run: npm run check
+
+      - name: Frontmatter folding tests
+        working-directory: silverbullet
+        run: npx vitest run client/codemirror/frontmatter_folding.test.ts
 
       - name: Build client and plugs
         working-directory: silverbullet
